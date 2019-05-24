@@ -14,7 +14,10 @@ build/
 dist-old/
 
 #Notebook checkpoints and data
-docs/*/.ipynb_checkpoints/
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+*/*/.ipynb_checkpoints/
+*/*/*/.ipynb_checkpoints/
 
 #pytest cache
 .cache
@@ -31,3 +34,6 @@ testing/
 # Upload bash script
 upload_package.bash
 update_cython.bash
+
+# visual studio code metadata
+.vscode/

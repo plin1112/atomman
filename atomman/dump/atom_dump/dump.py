@@ -67,20 +67,29 @@ def dump(system, f=None, lammps_units='metal', scale=False, prop_name=None,
         
     Returns
     -------
+    content : str
+        The generated atom_data content.  Only returned if f is None.
+    
     prop_info : list of dict
-        The filled-in prop_info structure (if return_prop_info is True).
+        The filled-in prop_info structure. Only returned if
+        return_prop_info is True.
     """
     lammps_unit = style.unit(lammps_units)
     
     # Set default values
     if prop_info is None:
         if prop_name is None:
-            prop_name = ['a_id'] + system.atoms_prop()
+            atoms_props = system.atoms_prop()
+            try:
+                atoms_props.pop(atoms_props.index('atom_id'))
+            except:
+                pass
+            prop_name = ['atom_id'] + atoms_props
         
         if shape is None and table_name is None:
             shape = []
             for name in prop_name:
-                if name == 'a_id':
+                if name == 'atom_id':
                     shape.append(())
                 elif name in ['spos', 'upos', 'supos']:
                     shape.append((3,))
@@ -226,8 +235,10 @@ def table_dump(system, f=None, prop_info=None, float_format ='%.13f'):
     # Transform to dataframe
     df = system.atoms_df(scale)
     
-    # Add a_id values
-    df['a_id'] = range(1, natoms+1)
+    # Check atom_id values
+    if 'atom_id' not in df:
+        df['atom_id'] = range(1, natoms+1)
+    assert len(df.atom_id) == len(set(df.atom_id)), 'atom_id is not unique for all atoms'    
     
     # Add alternate pos terms
     if 'upos' in altpos:

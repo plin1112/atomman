@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Introduction to atomman: Unit Conversions &#8212; atomman 1.2.1 documentation</title>
+    <title>Introduction to atomman: Unit Conversions &#8212; atomman 1.2.6 documentation</title>
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.2.1',
+        VERSION:     '1.2.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  false,
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="index.html" title="Tutorials"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">atomman 1.2.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">atomman 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorials</a> &#187;</li> 
       </ul>
     </div>  
@@ -224,7 +224,6 @@ div.nboutput div.output_area.stderr {
 <p><strong>Lucas M. Hale</strong>,
 <a class="reference external" href="mailto:lucas&#46;hale&#37;&#52;&#48;nist&#46;gov?Subject=ipr-demo">lucas<span>&#46;</span>hale<span>&#64;</span>nist<span>&#46;</span>gov</a>,
 <em>Materials Science and Engineering Division, NIST</em>.</p>
-<p>Notebook last updated: 2018-04-05</p>
 <p><a class="reference external" href="http://www.nist.gov/public_affairs/disclaimer.cfm">Disclaimers</a></p>
 <div class="section" id="1.-Introduction">
 <h2>1. Introduction<a class="headerlink" href="#1.-Introduction" title="Permalink to this headline">¶</a></h2>
@@ -258,6 +257,7 @@ documentation.)</p>
 <span></span><span class="c1"># Standard Python libraries</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="p">(</span><span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span>
                         <span class="n">division</span><span class="p">,</span> <span class="n">unicode_literals</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="c1"># http://www.numpy.org/</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -268,6 +268,9 @@ documentation.)</p>
 
 <span class="c1"># Show atomman version</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;atomman version =&#39;</span><span class="p">,</span> <span class="n">am</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+
+<span class="c1"># Show date of Notebook execution</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Notebook executed on&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
@@ -276,7 +279,8 @@ documentation.)</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-atomman version = 1.2.0
+atomman version = 1.2.6
+Notebook executed on 2019-04-23
 </pre></div></div>
 </div>
 </div>
@@ -426,15 +430,15 @@ documentation).</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-angstrom = 2.539964587775829e-10
-amu =      2.5952013225175658e-27
-eV =       1.1176519881738393e-19
-e =        4.476401647866274e-19
-K =        0.24006227873054145
-nm =       2.5399645877758288e-09
-g =        0.0015628669040498606
-J =        0.6975835326700333
-ps =       3.801811227981329e-12
+angstrom = 3.304866734219232e-10
+amu =      4.436811077821489e-28
+eV =       8.245418906360612e-18
+e =        6.915341046459071e-19
+K =        0.7127651014016032
+nm =       3.3048667342192325e-09
+g =        0.0002671910318819615
+J =        51.46385914314389
+ps =       2.3812978254184744e-13
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
@@ -524,9 +528,9 @@ ps =       3.801811227981329e-12
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[ 1100.  1200.  1300.]
- [ 1200.  2200.  2300.]
- [ 1300.  2300.  3300.]] MPa
+[[1100. 1200. 1300.]
+ [1200. 2200. 2300.]
+ [1300. 2300. 3300.]] MPa
 </pre></div></div>
 </div>
 </div>
@@ -629,7 +633,7 @@ string and perform the correct * or /.</p>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 5.5 kg/(m*s^2) =
-5.5 Pa
+5.499999999999999 Pa
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -652,9 +656,9 @@ string and perform the correct * or /.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[ 1100.  1200.  1300.]
- [ 1200.  2200.  2300.]
- [ 1300.  2300.  3300.]] MPa
+[[1100. 1200. 1300.]
+ [1200. 2200. 2300.]
+ [1300. 2300. 3300.]] MPa
 </pre></div></div>
 </div>
 </div>
@@ -705,9 +709,9 @@ string and perform the correct * or /.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[ 1100.  1200.  1300.]
- [ 1200.  2200.  2300.]
- [ 1300.  2300.  3300.]] MPa
+[[1100. 1200. 1300.]
+ [1200. 2200. 2300.]
+ [1300. 2300. 3300.]] MPa
 </pre></div></div>
 </div>
 </div>
@@ -861,7 +865,7 @@ value_unit().</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[ 10.  20.  30.  40.  50.] K
+[10. 20. 30. 40. 50.] K
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -920,18 +924,18 @@ the model, which can then be retrieved using error_unit().</p>
 <div class="highlight"><pre>
 {
   &#34;value&#34;: [
-    0.010816345907130692,
-    0.01925068691733486,
-    0.02956854323553098,
-    0.040164826400553244,
-    0.04908840853125055
+    0.009991281046873189,
+    0.020040629504555197,
+    0.029547104370641394,
+    0.04009101294971303,
+    0.04941917586438133
   ],
   &#34;error&#34;: [
-    0.0020967716606839237,
-    0.0020479435999082455,
-    0.0020629600974857044,
-    0.0019287120904610045,
-    0.002030534063900262
+    0.0019399738878442194,
+    0.001961899622012421,
+    0.0020496217305523987,
+    0.001928533738328999,
+    0.002035888981049507
   ],
   &#34;unit&#34;: &#34;m&#34;
 }
@@ -956,8 +960,8 @@ error_unit()</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-value = [ 10.81634591  19.25068692  29.56854324  40.1648264   49.08840853] mm
-error = [ 2.09677166  2.0479436   2.0629601   1.92871209  2.03053406] mm
+value = [ 9.99128105 20.0406295  29.54710437 40.09101295 49.41917586] mm
+error = [1.93997389 1.96189962 2.04962173 1.92853374 2.03588898] mm
 </pre></div></div>
 </div>
 </div>
@@ -993,7 +997,7 @@ working units changes values.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-57 atm = 0.005775525 GPa
+57 atm = 0.005775524999999999 GPa
 57 atm = 0.005775525 GPa
 </pre></div></div>
 </div>
@@ -1023,8 +1027,8 @@ working units changes values.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-57 s = 1.111138828e-07 GPa
-57 s = 7.96357781638e-10 GPa
+57 s = 1.7110475113373975e-07 GPa
+57 s = 9.264152585129309e-05 GPa
 </pre></div></div>
 </div>
 </div>
@@ -1089,7 +1093,7 @@ working units changes values.</p>
         <li class="right" >
           <a href="index.html" title="Tutorials"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">atomman 1.2.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">atomman 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Tutorials</a> &#187;</li> 
       </ul>
     </div>

@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Introduction to atomman: Load and Dump &#8212; atomman 1.2.1 documentation</title>
+    <title>Introduction to atomman: Load and Dump &#8212; atomman 1.2.6 documentation</title>
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.2.1',
+        VERSION:     '1.2.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  false,
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="01.3._System_class.html" title="Introduction to atomman: System Class"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">atomman 1.2.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">atomman 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Tutorials</a> &#187;</li> 
       </ul>
     </div>  
@@ -224,7 +224,6 @@ div.nboutput div.output_area.stderr {
 <p><strong>Lucas M. Hale</strong>,
 <a class="reference external" href="mailto:lucas&#46;hale&#37;&#52;&#48;nist&#46;gov?Subject=ipr-demo">lucas<span>&#46;</span>hale<span>&#64;</span>nist<span>&#46;</span>gov</a>,
 <em>Materials Science and Engineering Division, NIST</em>.</p>
-<p>Notebook last updated: 2018-05-29</p>
 <p><a class="reference external" href="http://www.nist.gov/public_affairs/disclaimer.cfm">Disclaimers</a></p>
 <div class="section" id="1.-Introduction">
 <h2>1. Introduction<a class="headerlink" href="#1.-Introduction" title="Permalink to this headline">¶</a></h2>
@@ -262,7 +261,7 @@ formats. The dump() function takes style, system and kwargs as
 parameters, while the dump_style() functions take system and kwargs.
 The underlying code is found in the atomman/dump directory.</p>
 <p><strong>Library Imports</strong></p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
 <span></span>In [1]:
 </pre></div>
@@ -271,14 +270,30 @@ The underlying code is found in the atomman/dump directory.</p>
 <span></span><span class="c1"># Standard Python libraries</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="p">(</span><span class="n">absolute_import</span><span class="p">,</span> <span class="n">print_function</span><span class="p">,</span>
                         <span class="n">division</span><span class="p">,</span> <span class="n">unicode_literals</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="c1"># http://www.numpy.org/</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">atomman</span> <span class="k">as</span> <span class="nn">am</span>
 <span class="kn">import</span> <span class="nn">atomman.unitconvert</span> <span class="k">as</span> <span class="nn">uc</span>
+
+<span class="c1"># Show atomman version</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;atomman version =&#39;</span><span class="p">,</span> <span class="n">am</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+
+<span class="c1"># Show date of Notebook execution</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Notebook executed on&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">())</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+atomman version = 1.2.6
+Notebook executed on 2019-04-23
+</pre></div></div>
 </div>
 <p>Generate test system information (CsCl)</p>
 <div class="nbinput docutils container">
@@ -417,6 +432,16 @@ properties.</p>
 <h3>2.1. dump(‘system_model’)<a class="headerlink" href="#2.1.-dump('system_model')" title="Permalink to this headline">¶</a></h3>
 <p>Keyword Parameters</p>
 <ul class="simple">
+<li><strong>f</strong> (<em>str or file-like object, optional</em>) File path or file-like
+object to write the content to. If not given, then the content is
+returned as a DataModelDict.</li>
+<li><strong>format</strong> (<em>str, optional</em>) File format ‘xml’ or ‘json’ to save the
+content as if f is given. If f is a filename, then the format will be
+automatically inferred from f’s extension. If format is not given and
+cannot be inferred, then it will be set to ‘json’.</li>
+<li><strong>indent</strong> (<em>int or None, optional</em>) Indentation option to use for
+XML/JSON content if f is given. A value of None (default) will add no
+line separatations or indentations.</li>
 <li><strong>box_unit</strong> (<em>str, optional</em>) Length unit to use for the box.
 Default value is ‘angstrom’.</li>
 <li><strong>symbols</strong> (<em>list, optional</em>) list of atom-model symbols
@@ -436,7 +461,8 @@ constant to include if available.</li>
 </ul>
 <p>Returns</p>
 <ul class="simple">
-<li><strong>model</strong> (<em>DataModelDict</em>) A data model of the system.</li>
+<li><strong>model</strong> (<em>DataModelDict</em>) A data model of the system. Returned if f
+is not given.</li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
@@ -474,6 +500,8 @@ XML system model:
 <ul class="simple">
 <li><strong>model</strong> (<em>str, file-like object or DataModelDict</em>) The data model
 to read.</li>
+<li><strong>symbols</strong> (<em>tuple, optional</em>) Allows the list of element symbols to
+be assigned during loading.</li>
 <li><strong>key</strong> (<em>str, optional</em>) The key identifying the root element for
 the system definition. Default value is ‘atomic-system’.</li>
 <li><strong>index</strong> (<em>int, optional</em>) If the full model has multiple key
@@ -605,8 +633,9 @@ extra per-atom properties.</p>
 <h3>3.1. dump(‘poscar’)<a class="headerlink" href="#3.1.-dump('poscar')" title="Permalink to this headline">¶</a></h3>
 <p>Parameters</p>
 <ul class="simple">
-<li><strong>fname</strong> (<em>str, optional</em>) Path to file where POSCAR content is
-saved to. If not given, a str of the content will be returned.</li>
+<li><strong>f</strong> (<em>str or file-like object, optional</em>) File path or file-like
+object to write the content to. If not given, then the content is
+returned as a str.</li>
 <li><strong>header</strong> (<em>str, optional</em>) The comment line to place at the top of
 the file. Default value is ‘’.</li>
 <li><strong>symbols</strong> (<em>list of str, optional</em>) List of the element symbols
@@ -616,8 +645,8 @@ system.symbols if set, otherwise no element content will be included.</li>
 value is ‘direct’.</li>
 <li><strong>box_scale</strong> (<em>float, optional</em>) A universal scaling constant
 applied to the box vectors. Default value is 1.0.</li>
-<li><strong>xf</strong> (<em>str, optional</em>) c-style format for printing the floating
-point numbers. Default value is ‘%.13e’.</li>
+<li><strong>float_format</strong> (<em>str, optional</em>) c-style format for printing the
+floating point numbers. Default value is ‘%.13e’.</li>
 </ul>
 <p>Returns</p>
 <ul class="simple">
@@ -658,6 +687,10 @@ direct
 <p>Parameters</p>
 <ul class="simple">
 <li><strong>poscar</strong> (<em>str or file-like object</em>) The POSCAR content to read.</li>
+<li><strong>symbols</strong> (<em>tuple, optional</em>) Allows the list of element symbols to
+be assigned during loading. Useful if the symbols for the model
+differ from the standard element tags or if the poscar file has no
+elemental information.</li>
 <li><strong>prop</strong> (<em>dict, optional</em>) Dictionary containing any extra per-atom
 properties to include.</li>
 </ul>
@@ -790,7 +823,7 @@ pbc = [ True  True  True]
 representing crystallographic information and is used by different
 crystal databases. Loading CIF files requires that the
 <a class="reference external" href="https://github.com/diffpy">diffpy.Structure</a> package be installed
-(Not yet Python3 compatible as of Feb 7 2018).</p>
+(Not yet Python3 compatible as of Feb 6 2019).</p>
 <div class="section" id="4.1.-load('cif')">
 <h3>4.1. load(‘cif’)<a class="headerlink" href="#4.1.-load('cif')" title="Permalink to this headline">¶</a></h3>
 <p>Parameters</p>
@@ -999,7 +1032,7 @@ format.</p>
 <h3>5.1 dump(‘table’)<a class="headerlink" href="#5.1-dump('table')" title="Permalink to this headline">¶</a></h3>
 <p>Parameters</p>
 <ul class="simple">
-<li><strong>fp</strong> (<em>str or file-like object, optional</em>) File path or file-like
+<li><strong>f</strong> (<em>str or file-like object, optional</em>) File path or file-like
 object to write the table to. If not given, then the table is
 returned as a string.</li>
 <li><strong>prop_name</strong> (<em>list, optional</em>) The Atoms properties to include.
@@ -1122,6 +1155,9 @@ corresponds to a single atoms property. Each dictionary must have a
 ‘unit’, and ‘dtype’ fields.</li>
 <li><strong>skiprows</strong> (<em>int</em>) Number of rows to skip before reading the data.</li>
 <li><strong>nrows</strong> (<em>int</em>) Number of rows of data to read.</li>
+<li><strong>comment</strong> (<em>str, optional</em>) Specifies a character which indicates
+all text on a given line after is to be considered to be a comment
+and ignored by parser. This is often ‘#’.</li>
 </ul>
 <p>Returns</p>
 <ul class="simple">
@@ -1255,9 +1291,9 @@ pbc = [ True  True  True]
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[[ 0.  0.  0.]
- [ 0.  0.  0.]
- [ 0.  0.  0.]]
+[[0. 0. 0.]
+ [0. 0. 0.]
+ [0. 0. 0.]]
 </pre></div></div>
 </div>
 </div>
@@ -1454,6 +1490,16 @@ pbc = [ True  True  True]
 <h2>7. atom_dump style<a class="headerlink" href="#7.-atom_dump-style" title="Permalink to this headline">¶</a></h2>
 <p>The atom_dump format is the LAMMPS dump files containing atomic
 coordinates and other per-atom properties.</p>
+<p><em>Updated version 1.2.5:</em> To support dump files that are partial lists of
+atoms, this style assigns/recognizes a per-atom property ‘atom_id’ that
+corresponds to the atom’s LAMMPS ID.</p>
+<ul class="simple">
+<li>For dump, the LAMMPS IDs in the LAMMPS dump file will be set to
+atom_id if the property exists. Otherwise, the LAMMPS IDs will be
+the index of the Atoms arrays plus one.</li>
+<li>For load, the atom_id property will be automatically assigned using
+the LAMMPS ID values.</li>
+</ul>
 <div class="section" id="7.1-dump('atom_dump')">
 <h3>7.1 dump(‘atom_dump’)<a class="headerlink" href="#7.1-dump('atom_dump')" title="Permalink to this headline">¶</a></h3>
 <p>Parameters</p>
@@ -1491,9 +1537,6 @@ conversion parameters, in which each dictionary in the list
 corresponds to a single atoms property. Each dictionary must have a
 ‘prop_name’ field, and can optionally have ‘table_name’, ‘shape’,
 ‘unit’, and ‘dtype’ fields.</li>
-<li><strong>header</strong> (<em>bool, optional</em>) Flag indicating whether to include the
-column names in the outputted table. Default value is False (no
-column names).</li>
 <li><strong>float_format</strong> (<em>str, optional</em>) c-style formatting string for
 floating point values. Default value is ‘%.13f’.</li>
 <li><strong>return_prop_info</strong> (<em>bool, optional</em>) Flag indicating if the
@@ -1505,8 +1548,8 @@ returned).</li>
 <ul class="simple">
 <li><strong>content</strong> (<em>str</em>) The generated atom_data content. Only returned
 if f is None.</li>
-<li><strong>prop_info</strong> (<em>list of dict</em>) The full prop_info detailing the
-property-table conversion.</li>
+<li><strong>prop_info</strong> (<em>list of dict</em>) The filled-in prop_info structure.
+Only returned if return_prop_info is True.</li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
@@ -1556,7 +1599,7 @@ ITEM: ATOMS id type x y z q stress[0][0] stress[0][1] stress[0][2] stress[1][0] 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-{&#39;prop_name&#39;: &#39;a_id&#39;, &#39;table_name&#39;: [&#39;id&#39;], &#39;shape&#39;: (), &#39;unit&#39;: None, &#39;dtype&#39;: None}
+{&#39;prop_name&#39;: &#39;atom_id&#39;, &#39;table_name&#39;: [&#39;id&#39;], &#39;shape&#39;: (), &#39;unit&#39;: None, &#39;dtype&#39;: None}
 {&#39;prop_name&#39;: &#39;atype&#39;, &#39;table_name&#39;: [&#39;type&#39;], &#39;shape&#39;: (), &#39;unit&#39;: None, &#39;dtype&#39;: None}
 {&#39;prop_name&#39;: &#39;pos&#39;, &#39;table_name&#39;: [&#39;x&#39;, &#39;y&#39;, &#39;z&#39;], &#39;shape&#39;: (3,), &#39;unit&#39;: &#39;angstrom&#39;, &#39;dtype&#39;: None}
 {&#39;prop_name&#39;: &#39;charge&#39;, &#39;table_name&#39;: [&#39;q&#39;], &#39;shape&#39;: (), &#39;unit&#39;: &#39;e&#39;, &#39;dtype&#39;: None}
@@ -1566,6 +1609,8 @@ ITEM: ATOMS id type x y z q stress[0][0] stress[0][1] stress[0][2] stress[1][0] 
 </div>
 <div class="section" id="7.2-load('atom_dump')">
 <h3>7.2 load(‘atom_dump’)<a class="headerlink" href="#7.2-load('atom_dump')" title="Permalink to this headline">¶</a></h3>
+<p><em>Updated version 1.2.5:</em> Note that property atom_id is added that
+corresponds to the LAMMPS atom ID.</p>
 <p>Parameters</p>
 <ul class="simple">
 <li><strong>data</strong> (<em>str or file-like object</em>) The content, file path or
@@ -1665,6 +1710,7 @@ pbc = [ True  True  True]
       <th>pos[0]</th>
       <th>pos[1]</th>
       <th>pos[2]</th>
+      <th>atom_id</th>
       <th>charge</th>
       <th>stress[0][0]</th>
       <th>stress[0][1]</th>
@@ -1684,6 +1730,7 @@ pbc = [ True  True  True]
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
+      <td>1</td>
       <td>1.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -1701,6 +1748,7 @@ pbc = [ True  True  True]
       <td>1.6</td>
       <td>1.6</td>
       <td>1.6</td>
+      <td>2</td>
       <td>-1.0</td>
       <td>0.0</td>
       <td>0.0</td>
@@ -1742,15 +1790,19 @@ be installed.</p>
 <h3>8.1. dump(‘ase_Atoms’)<a class="headerlink" href="#8.1.-dump('ase_Atoms')" title="Permalink to this headline">¶</a></h3>
 <p>Parameters</p>
 <ul class="simple">
-<li><strong>symbols</strong> (<em>list</em>) A list of unique elemental symbols to pair with
-system’s atypes. If not given, will try to use system.symbols.</li>
+<li><strong>symbols</strong> (<em>tuple, optional</em>) List of the element symbols that
+correspond to the atom types. If not given, will use system.symbols
+if set, otherwise no element content will be included.</li>
+<li><strong>return_prop</strong> (<em>bool, optional</em>) Indicates if the extra per-atom
+properties are to be returned in a dictionary. Default value is
+False.</li>
 </ul>
 <p>Returns</p>
 <ul class="simple">
 <li><strong>aseatoms</strong> (<em>ase.Atoms</em>) An ase representation of a collection of
 atoms.</li>
 <li><strong>prop</strong> (<em>dict</em>) Dictionary containing any extra per-atom properties
-to include.</li>
+to include. Returned if return_prop is True.</li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
@@ -1775,13 +1827,13 @@ to include.</li>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Atoms(symbols=&#39;CsCl&#39;, pbc=True, cell=[3.2, 3.2, 3.2])
-{&#39;charge&#39;: array([ 1., -1.]), &#39;stress&#39;: array([[[ 0.,  0.,  0.],
-        [ 0.,  0.,  0.],
-        [ 0.,  0.,  0.]],
+{&#39;charge&#39;: array([ 1., -1.]), &#39;stress&#39;: array([[[0., 0., 0.],
+        [0., 0., 0.],
+        [0., 0., 0.]],
 
-       [[ 0.,  0.,  0.],
-        [ 0.,  0.,  0.],
-        [ 0.,  0.,  0.]]])}
+       [[0., 0., 0.],
+        [0., 0., 0.],
+        [0., 0., 0.]]])}
 </pre></div></div>
 </div>
 </div>
@@ -1791,6 +1843,9 @@ Atoms(symbols=&#39;CsCl&#39;, pbc=True, cell=[3.2, 3.2, 3.2])
 <ul class="simple">
 <li><strong>aseatoms</strong> (<em>ase.Atoms</em>) An ase representation of a collection of
 atoms.</li>
+<li><strong>symbols</strong> (<em>tuple, optional</em>) Allows the list of element symbols to
+be assigned during loading. Useful if the symbols for the model
+differ from the standard element tags.</li>
 <li><strong>prop</strong> (<em>dict, optional</em>) Dictionary containing any extra per-atom
 properties to include.</li>
 </ul>
@@ -1938,8 +1993,9 @@ be installed. (No longer supports Python 2).</p>
 <h3>9.1. dump(‘pymatgen_Structure’)<a class="headerlink" href="#9.1.-dump('pymatgen_Structure')" title="Permalink to this headline">¶</a></h3>
 <p>Parameters</p>
 <ul class="simple">
-<li><strong>symbols</strong> (<em>list</em>) A list of unique elemental symbols to pair with
-system’s atypes. Will try to use system.symbols if not given.</li>
+<li><strong>symbols</strong> (<em>list</em>) List of the element symbols that correspond to
+the atom types. If not given, will use system.symbols if set,
+otherwise no element content will be included.</li>
 </ul>
 <p>Returns</p>
 <ul class="simple">
@@ -1973,13 +2029,13 @@ abc   :   3.200000   3.200000   3.200000
 angles:  90.000000  90.000000  90.000000
 Sites (2)
   #  SP      a    b    c    charge  stress
----  ----  ---  ---  ---  --------  ---------------
-  0  Cs    0    0    0           1  [[ 0.  0.  0.]
-                                     [ 0.  0.  0.]
-                                     [ 0.  0.  0.]]
-  1  Cl    0.5  0.5  0.5        -1  [[ 0.  0.  0.]
-                                     [ 0.  0.  0.]
-                                     [ 0.  0.  0.]]
+---  ----  ---  ---  ---  --------  ------------
+  0  Cs    0    0    0           1  [[0. 0. 0.]
+                                     [0. 0. 0.]
+                                     [0. 0. 0.]]
+  1  Cl    0.5  0.5  0.5        -1  [[0. 0. 0.]
+                                     [0. 0. 0.]
+                                     [0. 0. 0.]]
 </pre></div></div>
 </div>
 </div>
@@ -1989,6 +2045,9 @@ Sites (2)
 <ul class="simple">
 <li><strong>structure</strong> (<em>pymatgen.Structure</em>) A pymatgen representation of a
 structure.</li>
+<li><strong>symbols</strong> (<em>tuple, optional</em>) Allows the list of element symbols to
+be assigned during loading. Useful if the symbols for the model
+differ from the standard element tags.</li>
 </ul>
 <p>Returns</p>
 <ul class="simple">
@@ -2056,7 +2115,6 @@ pbc = [ True  True  True]
       <th>pos[0]</th>
       <th>pos[1]</th>
       <th>pos[2]</th>
-      <th>charge</th>
       <th>stress[0][0]</th>
       <th>stress[0][1]</th>
       <th>stress[0][2]</th>
@@ -2066,6 +2124,7 @@ pbc = [ True  True  True]
       <th>stress[2][0]</th>
       <th>stress[2][1]</th>
       <th>stress[2][2]</th>
+      <th>charge</th>
     </tr>
   </thead>
   <tbody>
@@ -2075,16 +2134,16 @@ pbc = [ True  True  True]
       <td>0.0</td>
       <td>0.0</td>
       <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
       <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
     </tr>
     <tr>
       <th>1</th>
@@ -2092,16 +2151,16 @@ pbc = [ True  True  True]
       <td>1.6</td>
       <td>1.6</td>
       <td>1.6</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
       <td>-1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
     </tr>
   </tbody>
 </table>
@@ -2119,11 +2178,8 @@ information that the spglib package uses.</p>
 <h3>10.1. dump(‘spglib_cell’)<a class="headerlink" href="#10.1.-dump('spglib_cell')" title="Permalink to this headline">¶</a></h3>
 <p>Returns</p>
 <ul class="simple">
-<li><strong>lattice</strong> (<em>numpy.ndarray</em>) The three lattice box vectors.</li>
-<li><strong>scaled_positions</strong> (<em>numpy.ndarray</em>) All box-scaled atomic
-coordinates.</li>
-<li><strong>numbers</strong> (<em>numpy.ndarray</em>) The integer atom types for each atom
-position.</li>
+<li>(<em>tuple</em>) (lattice, positions, and numbers) used as inputs for spglib
+functions.</li>
 </ul>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none"><div class="highlight"><pre>
@@ -2148,12 +2204,12 @@ position.</li>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 lattice:
-[[ 3.2  0.   0. ]
- [ 0.   3.2  0. ]
- [ 0.   0.   3.2]]
+[[3.2 0.  0. ]
+ [0.  3.2 0. ]
+ [0.  0.  3.2]]
 scaled_positions:
-[[ 0.   0.   0. ]
- [ 0.5  0.5  0.5]]
+[[0.  0.  0. ]
+ [0.5 0.5 0.5]]
 numbers:
 [2 1]
 </pre></div></div>
@@ -2188,12 +2244,12 @@ associated unit cell.</p>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 lattice:
-[[ 3.2  0.   0. ]
- [ 0.   3.2  0. ]
- [ 0.   0.   3.2]]
+[[3.2 0.  0. ]
+ [0.  3.2 0. ]
+ [0.  0.  3.2]]
 scaled_positions:
-[[ 0.   0.   0. ]
- [ 0.5  0.5  0.5]]
+[[0.  0.  0. ]
+ [0.5 0.5 0.5]]
 numbers:
 [2 1]
 </pre></div></div>
@@ -2203,8 +2259,10 @@ numbers:
 <h3>9.2. load(‘spglib_cell’)<a class="headerlink" href="#9.2.-load('spglib_cell')" title="Permalink to this headline">¶</a></h3>
 <p>Parameters</p>
 <ul class="simple">
-<li><strong>cell</strong> (<em>tuple</em>) The cell information in the format used by spglib.</li>
-<li><strong>symbols</strong> (<em>list</em>) Symbol information tp give to the system.</li>
+<li><strong>cell</strong> (<em>tuple</em>) A tuple containing 3x3 lattice vectors, 3XN box
+relative positions, and N numeric atomic types.</li>
+<li><strong>symbols</strong> (<em>list</em>) The elemental symbols to pair with the unique
+atom types/numbers.</li>
 </ul>
 <p>Returns</p>
 <ul class="simple">
@@ -2295,6 +2353,14 @@ pbc = [ True  True  True]
 </div></div>
 </div>
 </div>
+<div class="section" id="10.-phonopy_Atoms">
+<h3>10. phonopy_Atoms<a class="headerlink" href="#10.-phonopy_Atoms" title="Permalink to this headline">¶</a></h3>
+<p>These conversions allow for interactions with
+<a class="reference external" href="https://atztogo.github.io/phonopy/">phonopy</a>. As the phonopy.Atoms
+is based on the ase.Atoms class, the load/dump functions of this style
+are nearly identical to the ase_Atoms style. The only difference being
+which package’s Atoms class is returned by dump.</p>
+</div>
 </div>
 </div>
 
@@ -2354,6 +2420,7 @@ pbc = [ True  True  True]
 <li><a class="reference internal" href="#10.-spglib_cell-style">10. spglib_cell style</a><ul>
 <li><a class="reference internal" href="#10.1.-dump('spglib_cell')">10.1. dump(‘spglib_cell’)</a></li>
 <li><a class="reference internal" href="#9.2.-load('spglib_cell')">9.2. load(‘spglib_cell’)</a></li>
+<li><a class="reference internal" href="#10.-phonopy_Atoms">10. phonopy_Atoms</a></li>
 </ul>
 </li>
 </ul>
@@ -2385,7 +2452,7 @@ pbc = [ True  True  True]
         <li class="right" >
           <a href="01.3._System_class.html" title="Introduction to atomman: System Class"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">atomman 1.2.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">atomman 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >Tutorials</a> &#187;</li> 
       </ul>
     </div>

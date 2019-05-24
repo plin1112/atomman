@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Stroh &#8212; atomman 1.2.1 documentation</title>
+    <title>Stroh &#8212; atomman 1.2.6 documentation</title>
     <link rel="stylesheet" href="_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.2.1',
+        VERSION:     '1.2.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  false,
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Atoms" href="atomman.Atoms.html" />
-    <link rel="prev" title="SDVPN" href="atomman.defect.SDVPN.html" /> 
+    <link rel="next" title="Stroh" href="atomman.defect.VolterraDislocation.html" />
+    <link rel="prev" title="GammaSurface" href="atomman.defect.StackingFault.html" /> 
   </head>
   <body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -38,12 +38,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="atomman.Atoms.html" title="Atoms"
+          <a href="atomman.defect.VolterraDislocation.html" title="Stroh"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="atomman.defect.SDVPN.html" title="SDVPN"
+          <a href="atomman.defect.StackingFault.html" title="GammaSurface"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">atomman 1.2.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">atomman 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="atomman.html" >atomman package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="atomman.defect.html" accesskey="U">defect</a> &#187;</li> 
       </ul>
@@ -59,7 +59,7 @@
 <dl class="class">
 <dt id="atomman.defect.Stroh">
 <em class="property">class </em><code class="descclassname">atomman.defect.</code><code class="descname">Stroh</code><span class="sig-paren">(</span><em>C, burgers, axes=None, m=[1, 0, 0], n=[0, 1, 0], tol=1e-08</em><span class="sig-paren">)</span><a class="headerlink" href="#atomman.defect.Stroh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">atomman.defect.VolterraDislocation.VolterraDislocation</span></code></p>
 <p>Class for solving the Eshelby anisotropic solution for a straight
 dislocation or crack using the Stroh method.</p>
 <dl class="attribute">
@@ -134,16 +134,6 @@ displacement() and stress().</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="atomman.defect.Stroh.m">
-<code class="descname">m</code><a class="headerlink" href="#atomman.defect.Stroh.m" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="atomman.defect.Stroh.n">
-<code class="descname">n</code><a class="headerlink" href="#atomman.defect.Stroh.n" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="atomman.defect.Stroh.p">
 <code class="descname">p</code><a class="headerlink" href="#atomman.defect.Stroh.p" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>numpy.ndarray</em> – p eigenvalues</p>
@@ -174,7 +164,7 @@ should be right-hand orthogonal.  Default value is [1, 0, 0]
 <li><strong>n</strong> (<em>array-like object</em><em>, </em><em>optional</em>) – The n unit vector for the solution.  m, n, and u (dislocation line)
 should be right-hand orthogonal.  Default value is [0, 1, 0]
 (y-axis).</li>
-<li><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Tolerance parameter used to round off near-zero values.  Default
+<li><strong>tol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – Tolerance parameter used to round off near-zero values.  Default
 value is 1e-8.</li>
 </ul>
 </td>
@@ -214,11 +204,11 @@ value is 1e-8.</li>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="atomman.defect.SDVPN.html"
-                        title="previous chapter">SDVPN</a></p>
+  <p class="topless"><a href="atomman.defect.StackingFault.html"
+                        title="previous chapter">GammaSurface</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="atomman.Atoms.html"
-                        title="next chapter">Atoms</a></p>
+  <p class="topless"><a href="atomman.defect.VolterraDislocation.html"
+                        title="next chapter">Stroh</a></p>
         </div>
       </div>
       <div class="clearer"></div>
@@ -233,12 +223,12 @@ value is 1e-8.</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="atomman.Atoms.html" title="Atoms"
+          <a href="atomman.defect.VolterraDislocation.html" title="Stroh"
              >next</a> |</li>
         <li class="right" >
-          <a href="atomman.defect.SDVPN.html" title="SDVPN"
+          <a href="atomman.defect.StackingFault.html" title="GammaSurface"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">atomman 1.2.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">atomman 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="atomman.html" >atomman package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="atomman.defect.html" >defect</a> &#187;</li> 
       </ul>

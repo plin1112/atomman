@@ -16,7 +16,7 @@ class Box(object):
     
     def __init__(self, **kwargs):
         """
-        Initilizes a Box.  If parameters besides origin are given they
+        Initializes a Box.  If parameters besides origin are given they
         must completely define the box.  Allowed parameter sets are:
         
         - no parameters -> box is set to square unit box with origin = [0,0,0].
@@ -43,6 +43,187 @@ class Box(object):
         if len(kwargs) > 0:
             self.set(**kwargs)
     
+    @classmethod
+    def cubic(cls, a):
+        """
+        Initializes a Box in standard cubic setting using only cubic lattice
+        parameters.  
+
+        a = b = c, alpha = beta = gamma = 90
+
+        Parameters
+        ----------
+        - a : float
+            The a lattice constant
+
+        Returns
+        -------
+        atomman.Box
+        """
+        return cls(a=a, b=a, c=a, alpha=90, beta=90, gamma=90)
+
+    @classmethod
+    def hexagonal(cls, a, c):
+        """
+        Initializes a Box in standard hexagonal setting using only hexagonal lattice
+        parameters.  
+
+        a = b != c, alpha = beta = 90, gamma = 120
+
+        Parameters
+        ----------
+        - a : float
+            The a lattice constant
+        - c : float
+            The c lattice constant
+
+        Returns
+        -------
+        atomman.Box
+        """
+        if a == c:
+            raise ValueError('hexagonal lattice constants must be different')
+
+        return cls(a=a, b=a, c=c, alpha=90, beta=90, gamma=120)
+
+    @classmethod
+    def tetragonal(cls, a, c):
+        """
+        Initializes a Box in standard tetragonal setting using only tetragonal lattice
+        parameters.  
+
+        a = b != c, alpha = beta = gamma = 90
+
+        Parameters
+        ----------
+        - a : float
+            The a lattice constant
+        - c : float
+            The c lattice constant
+
+        Returns
+        -------
+        atomman.Box
+        """
+        if a == c:
+            raise ValueError('tetragonal lattice constants must be different')
+
+        return cls(a=a, b=a, c=c, alpha=90, beta=90, gamma=90)
+
+    @classmethod
+    def trigonal(cls, a, alpha):
+        """
+        Initializes a Box in standard trigonal setting using only trigonal lattice
+        parameters.  
+
+        a = b = c, alpha = beta = gamma < 120
+
+        Parameters
+        ----------
+        - a : float
+            The a lattice constant
+        - alpha : float
+            The alpha lattice angle in degrees
+
+        Returns
+        -------
+        atomman.Box
+        """
+        if alpha >= 120.0:
+            raise ValueError('trigonal alpha angle must be less than 120 degrees')        
+
+        return cls(a=a, b=a, c=a, alpha=alpha, beta=alpha, gamma=alpha)
+
+    @classmethod
+    def orthorhombic(cls, a, b, c):
+        """
+        Initializes a Box in standard orthorhombic setting using only orthorhombic lattice
+        parameters.  
+
+        a != b != c, alpha = beta = gamma = 90
+
+        Parameters
+        ----------
+        - a : float
+            The a lattice constant
+        - b : float
+            The b lattice constant
+        - c : float
+            The c lattice constant
+
+        Returns
+        -------
+        atomman.Box
+        """
+        if a == b or a == c:
+            raise ValueError('orthorhombic lattice constants must be different')
+
+        return cls(a=a, b=b, c=c, alpha=90, beta=90, gamma=90)
+
+    @classmethod
+    def monoclinic(cls, a, b, c, beta):
+        """
+        Initializes a Box in standard monoclinic setting using only monoclinic lattice
+        parameters.  
+
+        a != b != c, alpha = gamma = 90, beta > 90
+
+        Parameters
+        ----------
+        - a : float
+            The a lattice constant
+        - b : float
+            The b lattice constant
+        - c : float
+            The c lattice constant
+        - beta : float
+            The beta lattice angle in degrees
+
+        Returns
+        -------
+        atomman.Box
+        """
+        if a == b or a == c:
+            raise ValueError('monoclinic lattice constants must be different')
+        if beta <= 90.0:
+            raise ValueError('monoclinic angle beta must be greater than 90 degrees')
+
+        return cls(a=a, b=b, c=c, alpha=90, beta=beta, gamma=90)
+
+    @classmethod
+    def triclinic(cls, a, b, c, alpha, beta, gamma):
+        """
+        Initializes a Box in standard triclinic setting using only triclinic lattice
+        parameters.  
+
+        a != b != c, alpha != beta != gamma 
+
+        Parameters
+        ----------
+        - a : float
+            The a lattice constant
+        - b : float
+            The b lattice constant
+        - c : float
+            The c lattice constant
+        - alpha : float
+            The alpha lattice angle in degrees
+        - beta : float
+            The beta lattice angle in degrees
+        - gamma : float
+            The gamma lattice angle in degrees
+
+        Returns
+        -------
+        atomman.Box
+        """
+        if a == b or a == c:
+            raise ValueError('monoclinic lattice constants must be different')
+        if alpha == beta or alpha == gamma:
+            raise ValueError('monoclinic lattice angles must be different')
+
+        return cls(a=a, b=b, c=c, alpha=alpha, beta=beta, gamma=gamma)
+
     @property
     def vects(self):
         """numpy.ndarray : Array containing all three box vectors.  Can be set directly."""
@@ -181,6 +362,11 @@ class Box(object):
         assert self.is_lammps_norm(), 'Box is not normalized for LAMMPS style parameters'
         return self.__origin[2] + self.__vects[2,2]
     
+    @property
+    def volume(self):
+        """float : The volume of the box."""
+        return np.abs(np.dot(self.avect, np.cross(self.bvect, self.cvect)))
+
     def __str__(self):
         """
         The string representation of the box.  Lists the three vectors and origin.
@@ -251,7 +437,7 @@ class Box(object):
         else:
             raise TypeError('Invalid arguments')
     
-    def set_vectors(self, avect, bvect, cvect, origin=[0.0, 0.0, 0.0]):
+    def set_vectors(self, avect, bvect, cvect, origin=None):
         """
         Set the box using the three box vectors.
         
@@ -267,11 +453,15 @@ class Box(object):
             The 3D vector for the box origin position.  Default value is
             (0,0,0).
         """
+        # Set default origin
+        if origin is None:
+            origin = [0.0, 0.0, 0.0]
+        
         # Combine avect, bvect and cvect into vects and set directly
         self.vects = [avect, bvect, cvect]
         self.origin = origin
         
-    def set_abc(self, a, b, c, alpha=90.0, beta=90.0, gamma=90.0, origin=[0.0, 0.0, 0.0]):
+    def set_abc(self, a, b, c, alpha=90.0, beta=90.0, gamma=90.0, origin=None):
         """
         Set the box using crystal cell lattice parameters and angles.
         
@@ -296,7 +486,10 @@ class Box(object):
             The 3D vector for the box origin position.  Default value is
             (0,0,0).
         """
-         
+        # Check that angles are between 0 and 180
+        if alpha <= 0 or alpha >=180 or beta <= 0 or beta >= 180 or gamma <=0 or gamma >=180:
+            raise ValueError('lattice angles must be between 0 and 180 degrees')
+
         # Convert to lx, ly, lz, xy, xz, yz
         lx = a
         xy = b * np.cos(gamma * np.pi / 180)
@@ -308,7 +501,7 @@ class Box(object):
         # Call set_lengths
         self.set_lengths(lx=lx, ly=ly, lz=lz, xy=xy, xz=xz, yz=yz, origin=origin)
         
-    def set_lengths(self, lx, ly, lz, xy=0.0, xz=0.0, yz=0.0, origin=[0.0, 0.0, 0.0]):
+    def set_lengths(self, lx, ly, lz, xy=0.0, xz=0.0, yz=0.0, origin=None):
         """
         Set the box using LAMMPS box lengths and tilt factors.
         
@@ -336,6 +529,10 @@ class Box(object):
         
         assert lx > 0 and ly > 0 and lz > 0, 'box lengths must be positive'
         
+        # Set default origin
+        if origin is None:
+            origin = [0.0, 0.0, 0.0]
+
         # Construct vects array
         self.vects = [[lx, 0.0, 0.0],
                       [xy, ly,  0.0],

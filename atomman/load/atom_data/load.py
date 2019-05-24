@@ -54,7 +54,20 @@ def load(data, pbc=(True, True, True), symbols=None, atom_style='atomic', units=
         
         # Loop over all lines in fp
         for i, line in enumerate(fp):
-            terms = line.decode('UTF-8').split()
+            try:
+                line = line.decode('UTF-8')
+            except:
+                pass
+            
+            # Remove comments after '#'
+            try:
+                comment_index = line.index('#')
+            except:
+                pass
+            else:
+                line = line[:comment_index]
+            
+            terms = line.split()
 
             # Skip blank lines
             if len(terms)>0:
@@ -103,7 +116,8 @@ def load(data, pbc=(True, True, True), symbols=None, atom_style='atomic', units=
     if atomsstart is not None:
         prop_info = atoms_prop_info(atom_style, units)
         system = load_table(data, box=system.box, system=system, symbols=symbols,
-                            prop_info=prop_info, skiprows=atomsstart, nrows=natoms)
+                            prop_info=prop_info, skiprows=atomsstart, nrows=natoms,
+                            comment='#')
     else:
         raise ValueError('No Atoms section found!')
     

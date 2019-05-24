@@ -11,10 +11,10 @@ import numpy as np
 import pandas as pd
 
 # atomman imports
-from . import Atoms, Box, dvect, NeighborList
+from . import Atoms, Box, dvect, dmag, NeighborList
 from ..lammps import normalize as lmp_normalize
 from ..compatibility import iteritems, range, inttype, stringtype
-from ..tools import indexstr, miller
+from ..tools import indexstr, miller, ishexagonal, compositionstr
 from .. import dump
 
 class System(object):
@@ -23,6 +23,33 @@ class System(object):
     adds methods and attributes involving both.
     """
     
+    class _AtomsIndexer(object):
+        """Internal class for setitem / getitem acting on atoms"""
+        def __init__(self, host):
+            self.__host = host
+            
+        def __getitem__(self, index):
+            """Index getting of Atoms that operates on System."""
+            host = self.__host
+            return System(atoms=host.atoms[index], box=host.box, pbc=host.pbc,
+                          symbols=host.symbols)
+            
+        def __setitem__(self, index, value):
+            """Index setting of Atoms that operates on System."""
+            host = self.__host
+            if isinstance(value, Atoms):
+                host.atoms[index] = value
+            elif isinstance(value, System):
+                try:
+                    assert np.allclose(host.box.vects, value.box.vects)
+                    assert np.all(host.pbc == value.pbc)
+                    assert np.all(host.symbols == value.symbols)
+                except:
+                    raise ValueError('System properties not compatible')
+                host.atoms[index] = value.atoms
+            else:
+                raise ValueError('Can only set using Atoms or System objects')
+
     def __init__(self, atoms=Atoms(), box=Box(), pbc=(True, True, True),
                  scale=False, symbols=()):
         """
@@ -68,6 +95,9 @@ class System(object):
         # Scale pos if needed
         if scale is True:
             self.atoms_prop('pos', value=atoms.pos, scale=True)
+
+        # Set atoms indexer
+        self.__atoms_ix = System._AtomsIndexer(self)
     
     def __str__(self):
         """str : The string representation of a system."""
@@ -118,6 +148,11 @@ class System(object):
         self.__pbc = pbc
     
     @property
+    def atoms_ix(self):
+        """Indexer for index slicing of Systems by per-atom properties."""
+        return self.__atoms_ix
+
+    @property
     def symbols(self):
         """tuple : The element model symbols associated with each atype."""
         
@@ -136,6 +171,15 @@ class System(object):
             value = (value,)
         assert len(value) == self.natypes, 'length of symbols does not match natypes'
         self.__symbols = tuple(value)
+    
+    @property
+    def composition(self):
+        """str: The system's composition."""
+        if self.symbols[0] is not None:
+            counts = np.unique(self.atoms.atype, return_counts=True)[1]
+            return compositionstr(self.symbols, counts)
+        else:
+            return None
     
     def atoms_prop(self, key=None, index=None, value=None, a_id=None, scale=False):
         """
@@ -367,7 +411,45 @@ class System(object):
         cvect = self.box.cvect * (maxs[2] - mins[2])
         self.box_set(avect=avect, bvect=bvect, cvect=cvect, origin=origin)
     
-    def dvect(self, pos_0, pos_1, code=None):
+    def dvect(self, pos_0, pos_1):
+        """
+        Computes the shortest vector between pos_0 and pos_1 using box 
+        dimensions and accounting for periodic boundaries.
+        
+        Parameters
+        ----------
+        pos_0 : numpy.ndarray or index
+            Absolute Cartesian vector position(s) to use as reference point(s).
+            If the value can be used as an index, then self.atoms.pos[pos_0]
+            is taken.
+        pos_1 : numpy.ndarray or index
+            Absolute Cartesian vector position(s) to find relative to pos_0.
+            If the value can be used as an index, then self.atoms.pos[pos_1]
+            is taken.
+
+        Returns
+        -------
+        numpy.ndarray
+            The shortest vectors from each pos_0 to pos_1 positions.
+        """
+        # Test if pos_0 and pos_1 can be used as numpy array indices
+        try:
+            pos_0 = self.atoms.pos[pos_0]
+        except:
+            pos_0 = np.asarray(pos_0)
+        try:
+            pos_1 = self.atoms.pos[pos_1]
+        except:
+            pos_1 = np.asarray(pos_1)
+        
+        # Call dvect using self's box and pbc
+        vects = dvect(pos_0, pos_1, self.box, self.pbc)
+        if len(vects) == 1:
+            return vects[0]
+        else:
+            return vects
+
+    def dmag(self, pos_0, pos_1):
         """
         Computes the shortest distance between pos_0 and pos_1 using box 
         dimensions and accounting for periodic boundaries.
@@ -382,11 +464,11 @@ class System(object):
             Absolute Cartesian vector position(s) to find relative to pos_0.
             If the value can be used as an index, then self.atoms.pos[pos_1]
             is taken.
-        code: str, optional
-            Option for specifying which underlying code function to use:
-            - 'cython' uses the version of the function built in cython (faster).
-            - 'python' uses the purely python version.
-            Default is 'cython' if the code can be imported, otherwise 'python'.
+        
+        Returns
+        -------
+        numpy.ndarray
+            The shortest vector magnitude from each pos_0 to pos_1 positions.
         """
         # Test if pos_0 and pos_1 can be used as numpy array indices
         try:
@@ -399,7 +481,7 @@ class System(object):
             pos_1 = np.asarray(pos_1)
         
         # Call dvect using self's box and pbc
-        vects = dvect(pos_0, pos_1, self.box, self.pbc, code=code)
+        vects = dmag(pos_0, pos_1, self.box, self.pbc)
         if len(vects) == 1:
             return vects[0]
         else:
@@ -418,14 +500,6 @@ class System(object):
         model : str or file-like object, optional
             Gives the file path or content to load.  If given, no other
             parameters are allowed.
-        cmult : int, optional
-            Parameter associated with the binning routine.  Default value is most
-            likely the fastest.
-        code: str, optional
-            Option for specifying which underlying code function of nlist to use:
-            - 'cython' uses the version of the function built in cython (faster).
-            - 'python' uses the purely python version.
-            Default is 'cython' if the code can be imported, otherwise 'python'.
         initialsize : int, optional
             The number of neighbor positions to initially assign to each atom.
             Default value is 20.
@@ -587,10 +661,10 @@ class System(object):
         
         Parameters
         ----------
-        uvws : numpy.ndarray of int
+        uvws : numpy.ndarray
             A (3, 3) array of the Miller crystal vectors or a (3, 4) array of
             Miller-Bravais hexagonal crystal vectors to use in transforming the
-            system.
+            system.  Values must be integers.
         tol : float, optional
             Tolerance parameter used in rounding atomic positions near the
             boundaries to the boundary values.  In box-relative coordinates, any
@@ -610,23 +684,31 @@ class System(object):
             Returned if return_transform is True.
         """
         
-        # Check parameters
-        try:
-            uvws = np.asarray(uvws, dtype='int64')
-           
-            if uvws.shape == (3, 4):
+        uvws = np.asarray(uvws)
+
+        # Convert uvws from Miller-Bravais to Miller indices if needed
+        if uvws.shape == (3, 4):
+            if ishexagonal(self.box):
                 uvws = miller.vector4to3(uvws)
-            assert uvws.shape == (3, 3)
-        except:
-            raise ValueError('Invalid uvws crystal indices')
+            else:
+                raise ValueError('hexagonal indices only work on hexagonal systems')
+        
+        # Check uvws shape and values
+        if uvws.shape != (3, 3):
+            raise ValueError('Invalid uvws crystal indices shape')
+
+        int_uvws = np.asarray(np.rint(uvws), dtype='int64')
+        if np.allclose(uvws, int_uvws):
+            uvws = int_uvws
+        else:
+            raise ValueError('Rotation uvws must be integer values')
         
         # Get natoms and volume of system
         natoms = self.natoms
-        volume = np.abs(self.box.avect.dot(np.cross(self.box.bvect,
-                                                    self.box.cvect)))
+        volume = self.box.volume
         
         # Convert uvws to Cartesian units and compute new volume and natoms
-        newvects = miller.vectortocartesian(uvws, box=self.box)
+        newvects = miller.vector_crystal_to_cartesian(uvws, box=self.box)
         newvolume = np.abs(newvects[0].dot(np.cross(newvects[1], newvects[2])))
         newnatoms = int(round(newvolume / volume) * natoms)
         
